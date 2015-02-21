@@ -9,7 +9,7 @@ Note:
 <br/>
 1. This project is built with Qt 5.x and OpenGL.
 <br/>
-2. This is a Visual Studio 2010 project, but you can easily port it to a Qt project by manually creating a .pro configuration file.
+2. This is a Visual Studio 2010 project, but you can easily port it to a Qt project by manually creating a .pro file.
 <br/>
 3. If you use Visual Studio, you need Qt Visual Studio Add-in.
 <br/>
