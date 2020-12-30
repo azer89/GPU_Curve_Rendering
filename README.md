@@ -1,3 +1,6 @@
+![alt tag](https://raw.githubusercontent.com/azer89/GPU_Curve_Rendering/master/bezier_large.png)
+
+
 An implementation of a SIGGRAPH paper:<br/>
 Resolution Independent Curve Rendering using Programmable Graphics Hardware<br/>
 by Charles Loop and Jim Blinn<br/>
