@@ -7,7 +7,6 @@ by Charles Loop and Jim Blinn<br/>
 SIGGRAPH 2005<br/>
 http://dx.doi.org/10.1145/1073204.1073303<br/>
 <br/>
-<br/>
 
 Dependencies:<br/>
 1. Qt 5.x and OpenGL<br/>
