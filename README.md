@@ -9,9 +9,18 @@ http://dx.doi.org/10.1145/1073204.1073303<br/>
 <br/>
 <br/>
 
-Note:<br/>
-1. This project was built with Qt 5.x and OpenGL.<br/>
-2. This is a Visual Studio 2010 project, so you need to use Windows. Luckily, you can easily port it to a Qt project by manually creating a .pro file.<br/>
-3. If you decide to use Visual Studio, you need Qt Visual Studio add-in.<br/>
-4. You also need Eigen Matrix Library (http://eigen.tuxfamily.org/index.php?title=Main_Page)<br/>
+Dependencies:<br/>
+1. Qt 5.x and OpenGL<br/>
+2. Visual Studio 2010 <br/>
+3. [Eigen Matrix Library](http://eigen.tuxfamily.org)<br/>
+
+This repo was a part of a bigger project about converting a rasterized manga art to a vector graphics representation.
+
+Here's the video demo:
+
+
+
+
+
+https://github.com/azer89/GPU_Curve_Rendering/assets/790432/6ef8e14e-4adc-470d-8dd7-3b47f6bafe4e
 
