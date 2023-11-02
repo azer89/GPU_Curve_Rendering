@@ -15,7 +15,7 @@ Dependencies:<br/>
 
 You can take a look on CurveRenderer.cpp where the actual algorithm is implemented.
 
-This repo was actually a part of a bigger project about vectorizing rasterized manga images.
+This repo was actually a small part of a bigger project about vectorizing rasterized manga images.
 
 Here's the video demo:
 
