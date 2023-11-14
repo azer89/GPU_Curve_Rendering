@@ -13,7 +13,7 @@ Dependencies:<br/>
 2. Visual Studio 2010 <br/>
 3. [Eigen Matrix Library](http://eigen.tuxfamily.org)<br/>
 
-You can take a look on CurveRenderer.cpp where the actual algorithm is implemented.
+You can take a look on [CurveRenderer.cpp](https://github.com/azer89/GPU_Curve_Rendering/blob/master/QtTestShader/CurveRenderer.cpp) where the actual algorithm is implemented.
 
 This repo was actually a small part of a bigger project about vectorizing rasterized manga images.
 
