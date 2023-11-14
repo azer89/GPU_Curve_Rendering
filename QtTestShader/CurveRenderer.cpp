@@ -3,13 +3,13 @@
 #include "CurveRenderer.h"
 
 void CurveRenderer::ComputeCubic(float x0, float y0, float x1, float y1, float x2, float y2, float x3, float y3, int recursiveType)
-{	
+{
 	double d0 = 0; double d1 = 0; double d2 = 0; double d3 = 0;
-	CurveType curve_type = DetermineType (CVSystem::MyPoint(x0, y0),
-										  CVSystem::MyPoint(x1, y1),
-										  CVSystem::MyPoint(x2, y2),
-										  CVSystem::MyPoint(x3, y3),
-										  d0, d1, d2, d3);
+	CurveType curve_type = DetermineType(CVSystem::MyPoint(x0, y0),
+		CVSystem::MyPoint(x1, y1),
+		CVSystem::MyPoint(x2, y2),
+		CVSystem::MyPoint(x3, y3),
+		d0, d1, d2, d3);
 
 	// debug
 	curveTypeDebug = (int)curve_type;
@@ -37,14 +37,14 @@ void CurveRenderer::ComputeCubic(float x0, float y0, float x1, float y1, float x
 	double splitParam = 0;
 
 	std::vector<double> klm(12);
-		
+
 
 	switch (curve_type)
 	{
 	case CURVE_TYPE_UNKNOWN:
 		break;
 
-	case CURVE_TYPE_SERPENTINE:	
+	case CURVE_TYPE_SERPENTINE:
 
 		t1 = sqrtf(9.0f * d2 * d2 - 12 * d1 * d3);
 		ls = 3.0f * d2 - t1;
@@ -54,21 +54,21 @@ void CurveRenderer::ComputeCubic(float x0, float y0, float x1, float y1, float x
 		ltMinusLs = lt - ls;
 		mtMinusMs = mt - ms;
 
-		klm[0] =  ls * ms;
-		klm[1] =  	ls * ls * ls;
-		klm[2] =  	ms * ms * ms;
+		klm[0] = ls * ms;
+		klm[1] = ls * ls * ls;
+		klm[2] = ms * ms * ms;
 
-		klm[3] =  OneThird * (3.0f * ls * ms - ls * mt - lt * ms);
-		klm[4]  = 	ls * ls * (ls - lt);
-		klm[5]  = 	ms * ms * (ms - mt);
+		klm[3] = OneThird * (3.0f * ls * ms - ls * mt - lt * ms);
+		klm[4] = ls * ls * (ls - lt);
+		klm[5] = ms * ms * (ms - mt);
 
-		klm[6] =  OneThird * (lt * (mt - 2.0f * ms) + ls * (3.0f * ms - 2.0f * mt));
-		klm[7] =  	ltMinusLs * ltMinusLs * ls;
-		klm[8] =  	mtMinusMs * mtMinusMs * ms;
+		klm[6] = OneThird * (lt * (mt - 2.0f * ms) + ls * (3.0f * ms - 2.0f * mt));
+		klm[7] = ltMinusLs * ltMinusLs * ls;
+		klm[8] = mtMinusMs * mtMinusMs * ms;
 
-		klm[9] =  ltMinusLs * mtMinusMs;
-		klm[10] =  	-(ltMinusLs * ltMinusLs * ltMinusLs);
-		klm[11]  = 	-(mtMinusMs * mtMinusMs * mtMinusMs);
+		klm[9] = ltMinusLs * mtMinusMs;
+		klm[10] = -(ltMinusLs * ltMinusLs * ltMinusLs);
+		klm[11] = -(mtMinusMs * mtMinusMs * mtMinusMs);
 
 		if (d1 < 0.0f)
 			flip = true;
@@ -78,50 +78,50 @@ void CurveRenderer::ComputeCubic(float x0, float y0, float x1, float y1, float x
 	case CURVE_TYPE_LOOP:
 
 		t1 = sqrtf(4.0f * d1 * d3 - 3.0f * d2 * d2);
-	    ls = d2 - t1;
+		ls = d2 - t1;
 		lt = 2.0f * d1;
 		ms = d2 + t1;
 		mt = lt;
 
 		// Figure out whether there is a rendering artifact requiring
 		// the curve to be subdivided by the caller.
-		 ql = ls / lt;
-		 qm = ms / mt;
-		if (0.0f < ql && ql < 1.0f) 
+		ql = ls / lt;
+		qm = ms / mt;
+		if (0.0f < ql && ql < 1.0f)
 		{
 			errorLoop = 1;
 			splitParam = ql;
 			//std::cout << "error loop 1\n";
 		}
 
-		if (0.0f < qm && qm < 1.0f) 
+		if (0.0f < qm && qm < 1.0f)
 		{
 			errorLoop = 2;
 			splitParam = qm;
 
 			//std::cout << "error loop 2\n";
 		}
-				 
+
 		ltMinusLs = lt - ls;
 		mtMinusMs = mt - ms;
-		klm[0] =  ls * ms;
-		klm[1] =  	ls * ls * ms;
-		klm[2] =  	ls * ms * ms;
+		klm[0] = ls * ms;
+		klm[1] = ls * ls * ms;
+		klm[2] = ls * ms * ms;
 
-		klm[3] =  OneThird * (-ls * mt - lt * ms + 3.0f * ls * ms);
-		klm[4] =  	-OneThird * ls * (ls * (mt - 3.0f * ms) + 2.0f * lt * ms);
-		klm[5] =  	-OneThird * ms * (ls * (2.0f * mt - 3.0f * ms) + lt * ms);
+		klm[3] = OneThird * (-ls * mt - lt * ms + 3.0f * ls * ms);
+		klm[4] = -OneThird * ls * (ls * (mt - 3.0f * ms) + 2.0f * lt * ms);
+		klm[5] = -OneThird * ms * (ls * (2.0f * mt - 3.0f * ms) + lt * ms);
 
-		klm[6] =  OneThird * (lt * (mt - 2.0f * ms) + ls * (3.0f * ms - 2.0f * mt));
-		klm[7] =  	OneThird * (lt - ls) * (ls * (2.0f * mt - 3.0f * ms) + lt * ms);
-		klm[8] =  	OneThird * (mt - ms) * (ls * (mt - 3.0f * ms) + 2.0f * lt * ms);
+		klm[6] = OneThird * (lt * (mt - 2.0f * ms) + ls * (3.0f * ms - 2.0f * mt));
+		klm[7] = OneThird * (lt - ls) * (ls * (2.0f * mt - 3.0f * ms) + lt * ms);
+		klm[8] = OneThird * (mt - ms) * (ls * (mt - 3.0f * ms) + 2.0f * lt * ms);
 
-		klm[9] =  ltMinusLs * mtMinusMs;
-		klm[10] =  	-(ltMinusLs * ltMinusLs) * mtMinusMs;
-		klm[11] =  	-ltMinusLs * mtMinusMs * mtMinusMs;
+		klm[9] = ltMinusLs * mtMinusMs;
+		klm[10] = -(ltMinusLs * ltMinusLs) * mtMinusMs;
+		klm[11] = -ltMinusLs * mtMinusMs * mtMinusMs;
 
-		if(recursiveType == -1)
-			flip =  ((d1 > 0.0f && klm[0] < 0.0f) || (d1 < 0.0f && klm[0] > 0.0f));
+		if (recursiveType == -1)
+			flip = ((d1 > 0.0f && klm[0] < 0.0f) || (d1 < 0.0f && klm[0] > 0.0f));
 
 		break;
 
@@ -129,38 +129,38 @@ void CurveRenderer::ComputeCubic(float x0, float y0, float x1, float y1, float x
 		ls = d3;
 		lt = 3.0f * d2;
 		lsMinusLt = ls - lt;
-		klm[0] =  ls;
-		klm[1] =  ls * ls * ls;
-		klm[2] =  1.0f;
+		klm[0] = ls;
+		klm[1] = ls * ls * ls;
+		klm[2] = 1.0f;
 
-		klm[3] =  ls - OneThird * lt;
-		klm[4] =  	ls * ls * lsMinusLt;
-		klm[5] =  	1.0f;
+		klm[3] = ls - OneThird * lt;
+		klm[4] = ls * ls * lsMinusLt;
+		klm[5] = 1.0f;
 
-		klm[6] =  ls - TwoThirds * lt;
-		klm[7] =  	lsMinusLt * lsMinusLt * ls;
-		klm[8] =  	1.0f;
+		klm[6] = ls - TwoThirds * lt;
+		klm[7] = lsMinusLt * lsMinusLt * ls;
+		klm[8] = 1.0f;
 
-		klm[9] =  lsMinusLt;
-		klm[10] =  	lsMinusLt * lsMinusLt * lsMinusLt;
-		klm[11] =  	1.0f;
+		klm[9] = lsMinusLt;
+		klm[10] = lsMinusLt * lsMinusLt * lsMinusLt;
+		klm[11] = 1.0f;
 
 		break;
 
 	case CURVE_TYPE_QUADRATIC:
-		klm[0] =  0;
-		klm[1] =  0;
-		klm[2] =  0;
+		klm[0] = 0;
+		klm[1] = 0;
+		klm[2] = 0;
 
-		klm[3] =  OneThird;
-		klm[4] =  0;
-		klm[5] =  OneThird;
+		klm[3] = OneThird;
+		klm[4] = 0;
+		klm[5] = OneThird;
 
-		klm[6] =  TwoThirds;
-		klm[7] =  OneThird;
-		klm[8] =  TwoThirds;
+		klm[6] = TwoThirds;
+		klm[7] = OneThird;
+		klm[8] = TwoThirds;
 
-		klm[9] =  1;
+		klm[9] = 1;
 		klm[10] = 1;
 		klm[11] = 1;
 
@@ -173,10 +173,10 @@ void CurveRenderer::ComputeCubic(float x0, float y0, float x1, float y1, float x
 		break;
 	}
 
-	if(errorLoop != -1 && recursiveType == -1)
+	if (errorLoop != -1 && recursiveType == -1)
 	{
 		double x01 = (x1 - x0) * splitParam + x0;		double x12 = (x2 - x1) * splitParam + x1;		double x23 = (x3 - x2) * splitParam + x2;
-		double y01 = (y1 - y0) * splitParam + y0;		double y12 = (y2 - y1) * splitParam + y1;		double y23 = (y3 - y2) * splitParam + y2;		
+		double y01 = (y1 - y0) * splitParam + y0;		double y12 = (y2 - y1) * splitParam + y1;		double y23 = (y3 - y2) * splitParam + y2;
 
 		double x012 = (x12 - x01) * splitParam + x01;	double x123 = (x23 - x12) * splitParam + x12;
 		double y012 = (y12 - y01) * splitParam + y01;	double y123 = (y23 - y12) * splitParam + y12;
@@ -184,7 +184,7 @@ void CurveRenderer::ComputeCubic(float x0, float y0, float x1, float y1, float x
 		double x0123 = (x123 - x012) * splitParam + x012;
 		double y0123 = (y123 - y012) * splitParam + y012;
 
-		
+
 
 		drawAdditionalTri = true;
 		atri[0] = CVSystem::MyPoint(x0, y0);
@@ -193,18 +193,18 @@ void CurveRenderer::ComputeCubic(float x0, float y0, float x1, float y1, float x
 		//DrawPlainTriangle(atri[0].x, atri[0].y, atri[1].x, atri[1].y, atri[2].x, atri[2].y);
 
 
-		if(errorLoop == 1)	// flip second
+		if (errorLoop == 1)	// flip second
 		{
 			ComputeCubic(x0, y0, x01, y01, x012, y012, x0123, y0123, 0);
-			ComputeCubic(x0123,  y0123, x123, y123, x23, y23, x3, y3, 1);
+			ComputeCubic(x0123, y0123, x123, y123, x23, y23, x3, y3, 1);
 		}
-		else if(errorLoop == 2) // flip first
+		else if (errorLoop == 2) // flip first
 		{
 			ComputeCubic(x0, y0, x01, y01, x012, y012, x0123, y0123, 1);
-			ComputeCubic(x0123,  y0123, x123, y123, x23, y23, x3, y3, 0);
+			ComputeCubic(x0123, y0123, x123, y123, x23, y23, x3, y3, 0);
 		}
 
-		/*if(flip) 
+		/*if(flip)
 		{
 			DrawPlainTriangle(x0, y0,  x0123, y0123, x3, y3, false);
 		}
@@ -215,15 +215,15 @@ void CurveRenderer::ComputeCubic(float x0, float y0, float x1, float y1, float x
 
 		return;
 	}
-	else if(errorLoop == -1 && recursiveType == -1)
+	else if (errorLoop == -1 && recursiveType == -1)
 	{
 		drawAdditionalTri = false;
 	}
 
-	if(recursiveType == 1)
+	if (recursiveType == 1)
 		flip = !flip;
 
-	if(flip)
+	if (flip)
 	{
 		klm[0] = -klm[0]; klm[1] = -klm[1];
 		klm[3] = -klm[3]; klm[4] = -klm[4];
@@ -231,7 +231,7 @@ void CurveRenderer::ComputeCubic(float x0, float y0, float x1, float y1, float x
 		klm[9] = -klm[9]; klm[10] = -klm[10];
 	}
 
-	Triangulation (x0, y0, x1, y1, x2, y2, x3, y3, klm);
+	Triangulation(x0, y0, x1, y1, x2, y2, x3, y3, klm);
 
 	//if(recursiveType != -1)
 	//{
@@ -247,11 +247,11 @@ void CurveRenderer::ComputeCubic(float x0, float y0, float x1, float y1, float x
 
 }
 
-void CurveRenderer::Triangulation (double  x0, double  y0,
-									  double  x1, double  y1,
-									  double  x2, double  y2,
-									  double  x3, double  y3,
-									  std::vector<double> klm)
+void CurveRenderer::Triangulation(double  x0, double  y0,
+	double  x1, double  y1,
+	double  x2, double  y2,
+	double  x3, double  y3,
+	std::vector<double> klm)
 {
 	std::vector<MyVertex> vertices;
 	vertices.push_back(MyVertex(x0, y0, klm[0], klm[1], klm[2]));
@@ -260,11 +260,11 @@ void CurveRenderer::Triangulation (double  x0, double  y0,
 	vertices.push_back(MyVertex(x3, y3, klm[9], klm[10], klm[11]));
 
 	// First test for degenerate cases.
-	for (int i = 0; i < 4; ++i) 
+	for (int i = 0; i < 4; ++i)
 	{
-		for (int j = i + 1; j < 4; ++j) 
+		for (int j = i + 1; j < 4; ++j)
 		{
-			if (ApproxEqual(vertices[i].xyCoor, vertices[j].xyCoor)) 
+			if (ApproxEqual(vertices[i].xyCoor, vertices[j].xyCoor))
 			{
 				// Two of the vertices are coincident, so we can eliminate at
 				// least one triangle. We might be able to eliminate the other
@@ -287,7 +287,7 @@ void CurveRenderer::Triangulation (double  x0, double  y0,
 
 	// See whether any of the points are fully contained in the
 	// triangle defined by the other three.
-	for (int i = 0; i < 4; ++i) 
+	for (int i = 0; i < 4; ++i)
 	{
 		int indices[3] = { 0 };
 		int index = 0;
@@ -295,7 +295,7 @@ void CurveRenderer::Triangulation (double  x0, double  y0,
 			if (i != j)
 				indices[index++] = j;
 
-		if (PointInTriangle(vertices[i].xyCoor, vertices[indices[0]].xyCoor, vertices[indices[1]].xyCoor, vertices[indices[2]].xyCoor)) 
+		if (PointInTriangle(vertices[i].xyCoor, vertices[indices[0]].xyCoor, vertices[indices[1]].xyCoor, vertices[indices[2]].xyCoor))
 		{
 			// Produce three triangles surrounding this interior vertex.
 			for (int j = 0; j < 3; ++j)
@@ -327,71 +327,71 @@ void CurveRenderer::Triangulation (double  x0, double  y0,
 	// From which we can choose by seeing which of the potential
 	// diagonals intersect. Note that we choose the shortest diagonal
 	// to split the quad.
-	if (LinesIntersect(vertices[0].xyCoor, vertices[2].xyCoor, vertices[1].xyCoor, vertices[3].xyCoor)) 
+	if (LinesIntersect(vertices[0].xyCoor, vertices[2].xyCoor, vertices[1].xyCoor, vertices[3].xyCoor))
 	{
-		if ((vertices[2].xyCoor - vertices[0].xyCoor).DiagonalLengthSquared() < (vertices[3].xyCoor - vertices[1].xyCoor).DiagonalLengthSquared()) 
+		if ((vertices[2].xyCoor - vertices[0].xyCoor).DiagonalLengthSquared() < (vertices[3].xyCoor - vertices[1].xyCoor).DiagonalLengthSquared())
 		{
 			DrawTriangle(vertices[0], vertices[1], vertices[2]);
 			DrawTriangle(vertices[0], vertices[2], vertices[3]);
 		}
-		else 
+		else
 		{
 			DrawTriangle(vertices[0], vertices[1], vertices[3]);
 			DrawTriangle(vertices[1], vertices[2], vertices[3]);
 		}
-	} 
-	else if (LinesIntersect(vertices[0].xyCoor, vertices[3].xyCoor, vertices[1].xyCoor, vertices[2].xyCoor)) 
+	}
+	else if (LinesIntersect(vertices[0].xyCoor, vertices[3].xyCoor, vertices[1].xyCoor, vertices[2].xyCoor))
 	{
-		if ((vertices[3].xyCoor - vertices[0].xyCoor).DiagonalLengthSquared() < (vertices[2].xyCoor - vertices[1].xyCoor).DiagonalLengthSquared()) 
+		if ((vertices[3].xyCoor - vertices[0].xyCoor).DiagonalLengthSquared() < (vertices[2].xyCoor - vertices[1].xyCoor).DiagonalLengthSquared())
 		{
 			DrawTriangle(vertices[0], vertices[1], vertices[3]);
 			DrawTriangle(vertices[0], vertices[3], vertices[2]);
-		} 
-		else 
+		}
+		else
 		{
 			DrawTriangle(vertices[0], vertices[1], vertices[2]);
 			DrawTriangle(vertices[2], vertices[1], vertices[3]);
 		}
-	} 
-	else 
+	}
+	else
 	{
 		// Lines (0->1), (2->3) intersect -- or should, modulo numerical
 		// precision issues
 		if ((vertices[1].xyCoor - vertices[0].xyCoor).DiagonalLengthSquared() < (vertices[3].xyCoor - vertices[2].xyCoor).DiagonalLengthSquared())
 		{
-			DrawTriangle(vertices[0],vertices[2], vertices[1]);
+			DrawTriangle(vertices[0], vertices[2], vertices[1]);
 			DrawTriangle(vertices[0], vertices[1], vertices[3]);
-		} 
-		else 
+		}
+		else
 		{
-			DrawTriangle(vertices[0],vertices[2], vertices[3]);
-			DrawTriangle(vertices[3], vertices[2],vertices[1]);
+			DrawTriangle(vertices[0], vertices[2], vertices[3]);
+			DrawTriangle(vertices[3], vertices[2], vertices[1]);
 		}
 	}
 }
 
-void CurveRenderer::DrawPlainTriangle (double x0, double y0,
-						double x1, double y1,
-						double x2, double y2)
+void CurveRenderer::DrawPlainTriangle(double x0, double y0,
+	double x1, double y1,
+	double x2, double y2)
 {
 	//glDepthMask(GL_FALSE);
 	//glEnable(GL_BLEND);
 	//glBlendFunc(GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA);
 
 	glColor4f(0.0, 0.0, 0.0, 1.0);
-	glBegin (GL_TRIANGLES);
-	glVertex3f (x0, y0, 0.0f);
-	glVertex3f (x1, y1, 0.0f);
-	glVertex3f (x2, y2, 0.0f);
-	glEnd ();
+	glBegin(GL_TRIANGLES);
+	glVertex3f(x0, y0, 0.0f);
+	glVertex3f(x1, y1, 0.0f);
+	glVertex3f(x2, y2, 0.0f);
+	glEnd();
 
 	//glDisable(GL_BLEND);
 	//glDepthMask(GL_TRUE);
 }
 
-void CurveRenderer::DrawPlainTriangle (double x0, double y0, double x1, double y1, double x2, double y2, bool isInside)
+void CurveRenderer::DrawPlainTriangle(double x0, double y0, double x1, double y1, double x2, double y2, bool isInside)
 {
-	if(isInside)
+	if (isInside)
 	{
 		glColor4f(0.0, 0.0, 0.0, 1.0);
 	}
@@ -400,38 +400,38 @@ void CurveRenderer::DrawPlainTriangle (double x0, double y0, double x1, double y
 		glColor4f(1.0, 1.0, 0.0, 1.0);
 	}
 
-	glBegin (GL_TRIANGLES);
-	glVertex3f (x0, y0, 0.0f);
-	glVertex3f (x1, y1, 0.0f);
-	glVertex3f (x2, y2, 0.0f);
-	glEnd ();
+	glBegin(GL_TRIANGLES);
+	glVertex3f(x0, y0, 0.0f);
+	glVertex3f(x1, y1, 0.0f);
+	glVertex3f(x2, y2, 0.0f);
+	glEnd();
 }
 
-void CurveRenderer::DrawTriangle (MyVertex v0,
-								  MyVertex v1,
-								  MyVertex v2)
+void CurveRenderer::DrawTriangle(MyVertex v0,
+	MyVertex v1,
+	MyVertex v2)
 {
 	//std::cout << "draw\n";
 
-	shaderProgram->setUniformValue("insideColor",  QColor(Qt::black));
+	shaderProgram->setUniformValue("insideColor", QColor(Qt::black));
 	shaderProgram->setUniformValue("outsideColor", QColor(Qt::white));
 
 	glDepthMask(GL_FALSE);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA);
 
-	
 
-	glBegin (GL_TRIANGLES);
-	glTexCoord3f (v0.k, v0.l, v0.m);
-	glVertex3f (v0.xyCoor.x, v0.xyCoor.y, 0.0f);
 
-	glTexCoord3f (v1.k, v1.l, v1.m);
-	glVertex3f (v1.xyCoor.x, v1.xyCoor.y, 0.0f);
+	glBegin(GL_TRIANGLES);
+	glTexCoord3f(v0.k, v0.l, v0.m);
+	glVertex3f(v0.xyCoor.x, v0.xyCoor.y, 0.0f);
 
-	glTexCoord3f (v2.k, v2.l, v2.m);
-	glVertex3f (v2.xyCoor.x, v2.xyCoor.y, 0.0f);
-	glEnd ();
+	glTexCoord3f(v1.k, v1.l, v1.m);
+	glVertex3f(v1.xyCoor.x, v1.xyCoor.y, 0.0f);
+
+	glTexCoord3f(v2.k, v2.l, v2.m);
+	glVertex3f(v2.xyCoor.x, v2.xyCoor.y, 0.0f);
+	glEnd();
 
 
 	glDisable(GL_BLEND);
@@ -439,21 +439,21 @@ void CurveRenderer::DrawTriangle (MyVertex v0,
 }
 
 
-CurveType CurveRenderer::DetermineType (CVSystem::MyPoint    v0,
-										CVSystem::MyPoint    v1,
-										CVSystem::MyPoint    v2,
-										CVSystem::MyPoint    v3,
-										double& d0,
-										double& d1,
-										double& d2,
-										double& d3)
+CurveType CurveRenderer::DetermineType(CVSystem::MyPoint    v0,
+	CVSystem::MyPoint    v1,
+	CVSystem::MyPoint    v2,
+	CVSystem::MyPoint    v3,
+	double& d0,
+	double& d1,
+	double& d2,
+	double& d3)
 {
 	d0 = 0;
 
-	Eigen:: Vector3d b0(v0.x, v0.y, 1.0f);
-	Eigen:: Vector3d b1(v1.x, v1.y, 1.0f);
-	Eigen:: Vector3d b2(v2.x, v2.y, 1.0f);
-	Eigen:: Vector3d b3(v3.x, v3.y, 1.0f);
+	Eigen::Vector3d b0(v0.x, v0.y, 1.0f);
+	Eigen::Vector3d b1(v1.x, v1.y, 1.0f);
+	Eigen::Vector3d b2(v2.x, v2.y, 1.0f);
+	Eigen::Vector3d b3(v3.x, v3.y, 1.0f);
 
 	double a1 = b0.dot(b3.cross(b2));
 	double a2 = b1.dot(b0.cross(b3));
@@ -490,9 +490,9 @@ CurveType CurveRenderer::DetermineType (CVSystem::MyPoint    v0,
 	*/
 	//curve_type = CURVE_TYPE_UNKNOWN;
 
-	if (!disc) 
+	if (!disc)
 	{
-		if (!d1 && !d2) 
+		if (!d1 && !d2)
 		{
 			if (!d3)
 			{
@@ -525,9 +525,9 @@ bool CurveRenderer::ApproxEqual(CVSystem::MyPoint& v0, CVSystem::MyPoint& v1)
 }
 
 bool CurveRenderer::PointInTriangle(CVSystem::MyPoint& point,
-					 CVSystem::MyPoint& a,
-					 CVSystem::MyPoint& b,
-					 CVSystem::MyPoint& c)
+	CVSystem::MyPoint& a,
+	CVSystem::MyPoint& b,
+	CVSystem::MyPoint& c)
 {
 	// Algorithm from http://www.blackpawn.com/texts/pointinpoly/default.html
 	float x0 = c.x - a.x;
@@ -545,7 +545,7 @@ bool CurveRenderer::PointInTriangle(CVSystem::MyPoint& point,
 	float denominator = dot00 * dot11 - dot01 * dot01;
 	if (!denominator)
 		// Triangle is zero-area. Treat query point as not being inside.
-			return false;
+		return false;
 	// Compute
 	float inverseDenominator = 1.0f / denominator;
 	float u = (dot11 * dot02 - dot01 * dot12) * inverseDenominator;
@@ -556,17 +556,17 @@ bool CurveRenderer::PointInTriangle(CVSystem::MyPoint& point,
 
 // Utility functions local to this file.
 int CurveRenderer::Orientation(CVSystem::MyPoint& p1,
-				CVSystem::MyPoint& p2,
-				CVSystem::MyPoint& p3)
+	CVSystem::MyPoint& p2,
+	CVSystem::MyPoint& p3)
 {
 	float crossProduct = (p2.y - p1.y) * (p3.x - p2.x) - (p3.y - p2.y) * (p2.x - p1.x);
 	return (crossProduct < 0.0f) ? -1 : ((crossProduct > 0.0f) ? 1 : 0);
 }
 
 bool CurveRenderer::LinesIntersect(CVSystem::MyPoint& p1,
-				   CVSystem::MyPoint& q1,
-				   CVSystem::MyPoint& p2,
-				   CVSystem::MyPoint& q2)
+	CVSystem::MyPoint& q1,
+	CVSystem::MyPoint& p2,
+	CVSystem::MyPoint& q2)
 {
 	return (Orientation(p1, q1, p2) != Orientation(p1, q1, q2)
 		&& Orientation(p2, q2, p1) != Orientation(p2, q2, q1));
